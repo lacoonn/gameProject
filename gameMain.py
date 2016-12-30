@@ -129,6 +129,7 @@ def initGame():
     clock = pg.time.Clock()
     runGame()
 
+# I edittedd!!!!!!!!!
 
 if __name__ == '__main__':
     initGame()
