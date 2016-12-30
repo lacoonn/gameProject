@@ -107,10 +107,44 @@ def runGame():
             fire = fires[0]
 
         # Bullets Position
+        if len(bullet_xy) != 0:
+            for i, bxy in enumerate(bullet_xy):
+                bxy[0] += 15
+                bullet_xy[i][0] = bxy[0]
+
+                # Check if bullet strike Bat
+                if bxy[0] > bat_x:
+                    if bxy[1] > bat_y and bxy[1] < bat_y + bat_height:
+                        bullet_xy.remove(bxy)
+                        isShotBat = True
+
+                if bxy[0] >= WIDTH:
+                    try:
+                        bullet_xy.remove(bxy)
+                    except:
+                        pass
+
+        drawObject(aircraft, x, y)
+
+        if len(bullet_xy) != 0:
+            for bx, by in bullet_xy:
+                drawObject(bullet, bx, by)
+
+        if not isShotBat:
+            drawObject(bat, bat_x, bat_y)
+        else:
+            drawObject(boom, bat_x, bat_y)
+            boom_count += 1
+            if boom_count > 5:
+                boom_count = 0
+                bat_x = WIDTH
+                bat_y = random.randrange(0, HEIGHT - bat_height)
+                isShotBat = False
+
+        if fire != None:
+             drawObject(fire, fire_x, fire_y)
 
 
-
-        airplane(x, y)
         pg.display.update()
         clock.tick(60)
 
@@ -119,18 +153,31 @@ def runGame():
 
 
 def initGame():
-    global gamepad, clock, aircraft
+    global gamepad, clock, aircraft, background1, background2
+    global bat, fires, bullet, boom
+
+    fires = []
 
     pg.init()
     gamepad = pg.display.set_mode((WIDTH, HEIGHT))
     pg.display.set_caption('gameProject')
     aircraft = pg.image.load('airplane.jpg')
+    background1 = pg.image.load('background.jpg')
+    background2 = background1.copy()
+    bat = pg.image.load('bat.jpg')
+    fires.append(pg.image.load('fire.png'))
+    fires.append(pg.image.load('fire.png'))
+
+    boom = pg.image.load('boom.jpg')
+
+    for i in range(3):
+        fires.append(None)
+
+    bullet = pg.image.load('bullet.jpg')
 
     clock = pg.time.Clock()
     runGame()
 
-# I edittedd!!!!!!!!!
-# I'm Mr.Jo
 
 if __name__ == '__main__':
     initGame()
