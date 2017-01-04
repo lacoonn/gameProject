@@ -4,6 +4,7 @@ from time import sleep
 
 
 WHITE = (255, 255, 255)
+RED = (255, 0, 0)
 WIDTH = 1024
 HEIGHT = 512
 background_width = 1024
@@ -12,6 +13,32 @@ aircraft_height = 55
 
 bat_width = 110
 bat_height = 67
+
+fireball_width = 140
+fireball_height = 60
+
+
+def textObj(text, font):
+    textSurface = font.render(text, True, RED)
+    return textSurface, textSurface.get_rect()
+
+
+def dispMessage(text):
+    global gamepad
+
+    largeText = pg.font.Font('D2Coding.ttc', 115)
+    TextSurf, TextRect = textObj(text, largeText)
+    TextRect.center = ((WIDTH/2), (HEIGHT/2))
+    gamepad.blit(TextSurf, TextRect)
+    pg.display.update()
+    sleep(2)
+    runGame()
+
+
+def crash():
+    global gamepad
+    dispMessage('Crashed!')
+
 
 def drawObject(obj, x, y):
     global gamepad
@@ -123,6 +150,17 @@ def runGame():
                         bullet_xy.remove(bxy)
                     except:
                         pass
+        # Check aircraft crashed by Bat
+        if x+aircraft_width > bat_x:
+            if (y > bat_y and y < bat_y+bat_height) or \
+                    (y+aircraft_height > bat_y and y+aircraft_height < bat_y+bat_height):
+                crash()
+
+        # Check aircraft crashed by Fireball
+        if fire != None:
+            if x+aircraft_width > fire_x:
+                if (y > fire_y and y < fire_y+fireball_height) or (y+aircraft_height > fire_y and y+aircraft_height < fire_y+fireball_height):
+                    crash()
 
         drawObject(aircraft, x, y)
 
