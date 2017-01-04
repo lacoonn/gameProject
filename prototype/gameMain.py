@@ -220,19 +220,19 @@ def initGame():
     pg.init()
     gamepad = pg.display.set_mode((WIDTH, HEIGHT))
     pg.display.set_caption('gameProject')
-    aircraft = pg.image.load('airplane.jpg')
+    aircraft = pg.image.load('airplane.png')
     background1 = pg.image.load('background.jpg')
     background2 = background1.copy()
-    bat = pg.image.load('bat.jpg')
+    bat = pg.image.load('bat.png')
     fires.append(pg.image.load('fire.png'))
     fires.append(pg.image.load('fire.png'))
 
-    boom = pg.image.load('boom.jpg')
+    boom = pg.image.load('boom.png')
 
     for i in range(3):
         fires.append(None)
 
-    bullet = pg.image.load('bullet.jpg')
+    bullet = pg.image.load('bullet.png')
 
     clock = pg.time.Clock()
     runGame()
