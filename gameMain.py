@@ -17,6 +17,18 @@ bat_height = 67
 fireball_width = 140
 fireball_height = 60
 
+def drawScore(count):
+    global gamepad
+
+    font = pg.font.SysFont(None, 25)
+    text = font.render('Bat Passed: '+str(count), True, WHITE)
+    gamepad.blit(text, (0, 0))
+
+
+def gameOver():
+    global gamepad
+    dispMessage('Game Over')
+
 
 def textObj(text, font):
     textSurface = font.render(text, True, RED)
@@ -56,6 +68,8 @@ def runGame():
 
     isShotBat = False
     boom_count = 0
+
+    bat_passed = 0
 
     bullet_xy = []
 
@@ -108,6 +122,12 @@ def runGame():
         drawObject(background1, background1_x, 0)
         drawObject(background2, background2_x, 0)
 
+        drawScore(bat_passed)
+
+        # Check the number of Bat passed
+        if bat_passed > 2:
+            gameOver()
+
         # Aircraft Position
         y += y_change
         if y < 0:
@@ -118,6 +138,7 @@ def runGame():
         # Bat Position
         bat_x -= 7
         if bat_x <= 0:
+            bat_passed += 1
             bat_x = WIDTH
             bat_y = random.randrange(0, HEIGHT)
 
