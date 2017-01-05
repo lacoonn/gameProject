@@ -57,11 +57,6 @@ def drawObject(obj, x, y):
     gamepad.blit(obj, (x, y))
 
 
-def airplane(x, y):
-    global gamepad, aircraft
-    gamepad.blit(aircraft, (x, y))
-
-
 def runGame():
     global gamepad, aircraft, clock, background1, background2
     global bat, fires, bullet, boom
