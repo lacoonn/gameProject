@@ -9,6 +9,8 @@ GROUND = HEIGHT - 100
 
 class character:
     image = None
+    image_reverse = None
+    view_dir = True # 보는 방향, True는 오른쪽
 
     def __init__(self, x_pos, y_pos, x_v, y_v):
         self.x_pos = x_pos # 위치
@@ -45,8 +47,10 @@ def runGame(): # 게임에서 작동하는 부분. 무한반복문
             if event.type == pygame.KEYDOWN: # 키입력을 받으면 거기에 해당하는 결과를 냄
                 if event.key == pygame.K_RIGHT:
                     player.x_v = 7
+                    player.view_dir = True
                 if event.key == pygame.K_LEFT:
                     player.x_v = -7
+                    player.view_dir = False
                 if event.key == pygame.K_UP:
                     if player.y_pos == GROUND: # 땅 위에 있을때만 점프 가능
                         player.y_v = 25
@@ -55,7 +59,7 @@ def runGame(): # 게임에서 작동하는 부분. 무한반복문
                     if player.x_v > 0:
                         player.x_v = 0
                 elif event.key == pygame.K_LEFT:
-                    if player.y_v < 0:
+                    if player.x_v < 0:
                         player.x_v = 0
 
         gamepad.fill((255, 255, 255))
@@ -64,7 +68,10 @@ def runGame(): # 게임에서 작동하는 부분. 무한반복문
         updateObject(player)
 
         # 그림 그리는 부분
-        drawObject(player.image, player.x_pos, player.y_pos)
+        if player.view_dir is True:
+            drawObject(player.image, player.x_pos, player.y_pos)
+        elif player.view_dir is False:
+            drawObject(player.image_reverse, player.x_pos, player.y_pos)
 
         pygame.display.update()
         clock.tick(60)
@@ -86,6 +93,7 @@ def initGame(): # 게임 초기화하는 함수
     pygame.init()
     gamepad = pygame.display.set_mode((WIDTH, HEIGHT))
     player.image = pygame.image.load('player.png')
+    player.image_reverse = pygame.image.load('player_reverse.png')
 
     clock = pygame.time.Clock()
     runGame()
