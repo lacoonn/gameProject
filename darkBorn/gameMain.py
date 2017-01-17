@@ -2,9 +2,11 @@ import pygame
 
 a = 1.5 # 가속도
 # v = 이전속도 + at (t는 프레임으로 대체)
-WIDTH = 800
-HEIGHT = 500
-GROUND = HEIGHT - 140
+WIDTH = 1280
+HEIGHT = 600
+GROUND = HEIGHT - 90
+jumpPower = 25
+moveSpeed = 7
 
 
 class character:
@@ -13,18 +15,19 @@ class character:
     height = 0
     view_dir = True # 보는 방향, True는 오른쪽
     weapon = None
-    weapon_temp = None
-    weapon_x = None
-    weapon_y = None
-    isAttack = False
+    weapon_temp = None # 기존 무기 이미지를 잠시 저장
+    weapon_x = None # 무기 위치
+    weapon_y = None # 무기 위치
+    isAttack = False # 공격 중인지 판별
     rotateTime = 0
-    isGround = True
+    isGround = True # 땅 위인지 판별
+    v_temp = 0
 
-    def __init__(self, x_pos1, y_pos1, x_v1, y_v1):
-        self.x_pos = x_pos1 # 위치
-        self.y_pos = y_pos1
-        self.x_v = x_v1 # 속도
-        self.y_v = y_v1
+    def __init__(self, x_pos, y_pos, x_v, y_v):
+        self.x_pos = x_pos # 위치
+        self.y_pos = y_pos
+        self.x_v = x_v # 속도
+        self.y_v = y_v
 
     def setImage(self, filename):
         self.image = pygame.image.load(filename)
@@ -47,6 +50,11 @@ class character:
         self.weapon_y = self.y_pos
 
     def attack(self):
+        if self.isAttack is False:
+            self.isAttack = True
+            self.v_temp = self.x_v
+            if self.isGround is True:
+                self.x_v = 0
         if self.isAttack is True:
             self.rotateTime += 1
             if self.rotateTime is 2:
@@ -61,12 +69,9 @@ class character:
                 self.weapon = pygame.image.load('sword4.png')
             if self.rotateTime is 12:
                 self.isAttack = False
-                self.weapon = self.weapon_temp
+                self.weapon = pygame.image.load('sword.png')
                 self.rotateTime = 0
-                return
-        else:
-            self.isAttack = True
-            self.weapon_temp = self.weapon.copy()
+                self.x_v = self.v_temp
 
 class ground:
     image = None
@@ -181,23 +186,32 @@ def runGame(): # 게임에서 작동하는 부분. 무한반복문
 
             if event.type == pygame.KEYDOWN: # 키입력을 받으면 거기에 해당하는 결과를 냄
                 if event.key == pygame.K_RIGHT:
-                    player.x_v = 7
+                    player.x_v = moveSpeed
                     player.view_dir = True
                 if event.key == pygame.K_LEFT:
-                    player.x_v = -7
+                    player.x_v = -moveSpeed
                     player.view_dir = False
                 if event.key == pygame.K_UP:
                     if player.isGround == True: # 땅 위에 있을때만 점프 가능
-                        player.y_v = 25
+                        player.y_v = jumpPower
                 if event.key is pygame.K_z:
                     player.attack()
+                if event.key is pygame.K_x:
+                    if player.view_dir is True and player.x_v == 7:
+                        player.x_v = 20
+                    if player.view_dir is False and player.x_v == -7:
+                        player.x_v = -20
             if event.type == pygame.KEYUP: # 해당 방향으로 이동하고 있을 때만 키를 땠을때 속도를 0으로 변환
                 if event.key == pygame.K_RIGHT:
+                    player.v_temp = 0
                     if player.x_v > 0:
                         player.x_v = 0
                 elif event.key == pygame.K_LEFT:
+                    player.v_temp = 0
                     if player.x_v < 0:
                         player.x_v = 0
+        # if player.isAttack is True and player.isGround is True:
+        #     player.x_v = 0
 
         # 배경을 그리는 부분
         gamepad.fill((255, 255, 255))
@@ -226,21 +240,22 @@ def initGame(): # 게임 초기화하는 함수
     global player, background, groundGroup
 
     pygame.init()
+
     gamepad = pygame.display.set_mode((WIDTH, HEIGHT))
 
     background = pygame.image.load('background.png')
 
     groundGroup = []
 
-    ground1 = ground(300, HEIGHT - 250)
+    ground1 = ground(300, GROUND - 130)
     ground1.setImage('ground.png')
     groundGroup.append(ground1)
 
-    ground2 = ground(500, HEIGHT - 400)
+    ground2 = ground(500, GROUND - 260)
     ground2.setImage('ground.png')
     groundGroup.append(ground2)
 
-    player = character(100, 0, 0, 0)
+    player = character(200, 200, 0, 0)
     player.setImage('player.png')
     player.setWeapon('sword.png')
     player.updateWeapon()
